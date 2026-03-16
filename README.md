@@ -1,4 +1,4 @@
-# real-time-ppe-detection
+# Automated PPE Detection Using CNN-Based Object Detection
 ## Project Overview
 Workplace safety is a major concern in industries such as construction, manufacturing, and logistics where workers are exposed to hazardous environments. Personal protective equipment (PPE) such as hard hats, safety vests, and masks helps reduce the risk of injuries and accidents. However, monitoring whether workers consistently wear PPE can be difficult when done manually, especially in large workplaces with many employees.
 
