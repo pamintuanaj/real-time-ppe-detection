@@ -1,101 +1,122 @@
-# Automated PPE Detection Using CNN-Based Object Detection
+# Automated PPE Detection Using YOLOv8, NLP, and Reinforcement Learning
 
 ## Overview
-This project develops an intelligent safety monitoring system designed to automatically detect Personal Protective Equipment (PPE) in workplace environments. Using computer vision, the system identifies whether workers are wearing essential safety gear such as hard hats, safety vests, and face masks.
+This project develops an end-to-end AI system for detecting Personal Protective Equipment (PPE) in workplace environments using deep learning, natural language processing, and reinforcement learning.
 
-The system is built around a **YOLOv8-based Convolutional Neural Network (CNN)** for real-time object detection. To extend functionality, the project also includes a **Natural Language Processing (NLP) module** for analyzing safety logs and a **Reinforcement Learning (RL) component** for adaptive decision-making.
+The system combines:
+* a **YOLOv8-based Convolutional Neural Network (CNN)** for real-time object detection  
+* a **Natural Language Processing (NLP)** module for analyzing safety logs  
+* a **Reinforcement Learning (RL)** component for adaptive threshold optimization  
 
-At the current stage (Week 2), the system has a working end-to-end pipeline including:
-- Dataset preprocessing and structuring  
-- Exploratory Data Analysis (EDA)  
-- YOLOv8 model training  
-- Initial evaluation metrics  
-- Real-time webcam detection  
+The goal is to assist safety officers in monitoring PPE compliance, reducing workplace risks, and enabling real-time decision-making.
 
 ---
 
-## System Architecture
-
-- **Core Detection Model:** YOLOv8 (Ultralytics)
-- **Backbone:** CSPDarknet (for feature extraction)
-- **Detection Type:** Multi-class object detection
-- **Deployment Mode:** Real-time (OpenCV webcam)
-
----
-
-## Components
-
-### 🔹 CNN Component (YOLOv8)
-- Performs object detection and localization
-- Detects PPE classes such as:
-  - Hard hats
-  - Safety vests
-  - Face masks
-  - Non-compliance cases
-- Optimized for real-time inference
+## Features
+* YOLOv8-based real-time object detection  
+* Detection of PPE classes (helmet, vest, mask, non-compliance)  
+* EDA pipeline with dataset visualization  
+* Real-time webcam detection using OpenCV  
+* NLP prototype for safety log classification  
+* RL-based threshold tuning (stub)  
+* Multi-metric evaluation (Precision, Recall, mAP)  
+* Modular and extensible system design  
 
 ---
 
-### 🔹 NLP Component (Prototype)
-- Classifies safety-related textual logs
-- Intended for:
-  - Incident classification
-  - Risk identification
-- Currently in early-stage implementation
+## Project Structure
+```
+
+real-time-ppe-detection/
+│
+├── data/
+│   ├── images/
+│   └── labels/
+│
+├── notebook/
+│   └── 01_eda.ipynb
+│
+├── runs/
+│   └── detect/
+│       └── models/
+│           └── ppe_yolov8/
+│
+├── scripts/
+│   ├── detection.py
+│   ├── nlp_component_stub.py
+│   └── rl_stub.py
+│
+├── models/
+│
+├── experiments/
+│   └── results/
+│
+├── docs/
+│   └── checkpoint_report.pdf
+│
+├── requirements.txt
+└── README.md
+
+````
 
 ---
 
-### 🔹 RL Component (Stub)
-- Designed to dynamically adjust detection thresholds
-- Uses reward-based tuning (e.g., penalizing missed detections)
-- Not yet integrated into the main pipeline
+## Installation
+```bash
+git clone https://github.com/pamintuanaj/real-time-ppe-detection.git
+cd real-time-ppe-detection
+````
+
+```bash
+pip install -r requirements.txt
+```
 
 ---
 
 ## Dataset
 
-- **Source:**  
-  https://universe.roboflow.com/roboflow-universe-projects/construction-site-safety
+### Source
 
-- **Description:**  
-  The dataset consists of annotated images from construction and industrial environments. Each image contains bounding box labels in YOLO format for multiple PPE classes.
+[https://universe.roboflow.com/roboflow-universe-projects/construction-site-safety](https://universe.roboflow.com/roboflow-universe-projects/construction-site-safety)
 
-- **Preprocessing:**
-  - Images resized to 640×640
-  - Labels normalized
-  - Dataset split into train/val/test
+### Description
 
-- **Data Split:**
-  - 70% Training  
-  - 15% Validation  
-  - 15% Testing  
+The dataset contains annotated images from construction and industrial environments with bounding box labels for PPE classes such as hard hats, safety vests, and face masks.
 
-- **Ethical Considerations:**
-  - No personally identifiable information (PII) stored  
-  - Dataset used under open academic license  
+### Preprocessing
+
+* Images resized to 640×640
+* Labels normalized (YOLO format)
+* Dataset split into train / validation / test
 
 ---
 
-## Exploratory Data Analysis (EDA)
+## Exploratory Data Analysis
 
-EDA revealed key dataset characteristics:
+Notebook:
 
-- **Class Imbalance:**  
-  Some classes (e.g., hardhat) dominate others (e.g., face_mask)
+```
+notebook/01_eda.ipynb
+```
 
-- **Small Object Detection Problem:**  
-  Many objects occupy only 3–12% of image area
+Includes:
 
-- **Lighting Variability:**  
-  Dataset includes both bright and low-light images
+* class distribution
+* sample image visualization
+* bounding box analysis
+* brightness distribution
 
-These factors directly impact detection performance and guide future improvements.
+Key findings:
+
+* class imbalance
+* small-object detection problem
+* varying lighting conditions
 
 ---
 
 ## Model Training
 
-The model was trained using pretrained YOLOv8 weights:
+Training using YOLOv8:
 
 ```python
 from ultralytics import YOLO
@@ -108,3 +129,139 @@ model.train(
     imgsz=640,
     batch=16
 )
+```
+
+---
+
+## Evaluation Metrics (Week 2 Results)
+
+| Metric       | Value  |
+| ------------ | ------ |
+| Precision    | 0.5455 |
+| Recall       | 0.3967 |
+| mAP@0.5      | 0.4239 |
+| mAP@0.5:0.95 | 0.2315 |
+
+### Interpretation
+
+* moderate precision
+* lower recall (missed detections)
+* expected improvement with more training
+
+---
+
+## Real-Time Detection
+
+Run:
+
+```bash
+python scripts/detection.py
+```
+
+Or:
+
+```python
+import cv2
+from ultralytics import YOLO
+
+model = YOLO("best.pt")
+
+cap = cv2.VideoCapture(0)
+
+while True:
+    ret, frame = cap.read()
+    results = model(frame)
+    annotated = results[0].plot()
+
+    cv2.imshow("PPE Detection", annotated)
+
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+```
+
+---
+
+## NLP Component
+
+Script:
+
+```
+scripts/nlp_component_stub.py
+```
+
+Approach:
+
+* text classification of safety logs
+* keyword / TF-IDF based prototype
+
+Purpose:
+
+* identify risk patterns
+* support safety reporting
+
+---
+
+## Reinforcement Learning Component
+
+Script:
+
+```
+scripts/rl_stub.py
+```
+
+Approach:
+
+* Q-learning (conceptual)
+* threshold tuning for detection
+* reward-based optimization
+
+Status:
+
+* prototype stage
+
+---
+
+## System Architecture
+
+```
+Image → YOLOv8 Detection
+            ↓
+   Bounding Boxes + Classes
+            ↓
+   RL Threshold Adjustment
+            ↓
+ Final Decision → NLP Analysis
+```
+
+---
+
+## Ethical Considerations
+
+* system is a decision-support tool
+* sensitive to lighting and dataset bias
+* not a replacement for human supervision
+* no personally identifiable information stored
+
+---
+
+## Team Members
+
+* Lapid, John Vincent Y.
+* Pamintuan, Alexia John D.
+* Santos, Jhanrelle L.
+* Toribio, Dexter Christian C.
+
+---
+
+## Final Notes
+
+This project demonstrates:
+
+* real-time object detection using YOLOv8
+* data analysis through EDA
+* NLP for interpretability
+* reinforcement learning for optimization
+
+forming a modular AI-based safety monitoring system.
+
+```
