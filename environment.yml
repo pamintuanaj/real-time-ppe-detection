@@ -1,0 +1,14 @@
+name: ppe-detection
+channels:
+  - defaults
+dependencies:
+  - python=3.10
+  - pip
+  - pip:
+      - ultralytics
+      - opencv-python
+      - matplotlib
+      - pillow
+      - pyyaml
+      - jupyter
+      - notebook

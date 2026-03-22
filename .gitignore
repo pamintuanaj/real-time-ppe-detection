@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.ipynb_checkpoints/
+.env
+venv/
+.venv/
+runs/
+models/ppe_yolov8/
+models/live_output.mp4
