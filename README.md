@@ -1,38 +1,110 @@
 # Automated PPE Detection Using CNN-Based Object Detection
 
-### Overview
-This project develops an intelligent safety monitoring system designed to automatically detect Personal Protective Equipment (PPE) in workplace environments. By utilizing computer vision, the system identifies if workers are wearing essential safety gear like hard hats, safety vests, and face masks. 
+## Overview
+This project develops an intelligent safety monitoring system designed to automatically detect Personal Protective Equipment (PPE) in workplace environments. Using computer vision, the system identifies whether workers are wearing essential safety gear such as hard hats, safety vests, and face masks.
 
-To provide a comprehensive safety solution, the system integrates a **YOLOv8-based CNN** for visual detection, an **NLP module** to categorize safety logs, and a **Reinforcement Learning (RL) agent** that dynamically adjusts detection sensitivity. This multi-component approach helps safety officers maintain high compliance standards and mitigate occupational hazards in real-time.
+The system is built around a **YOLOv8-based Convolutional Neural Network (CNN)** for real-time object detection. To extend functionality, the project also includes a **Natural Language Processing (NLP) module** for analyzing safety logs and a **Reinforcement Learning (RL) component** for adaptive decision-making.
 
-### Components
-* **Core Deep Learning Model:** YOLOv8 (You Only Look Once) optimized for real-time object detection and localization.
-* **CNN Component:** A YOLOv8 CSPDarknet backbone used for multi-scale feature extraction from worksite imagery.
-* **NLP Component:** A text classification module that analyzes written safety incident reports and logs to identify high-risk zones.
-* **RL Component:** A Q-learning agent that dynamically tunes the model's confidence thresholds based on asymmetric costs (e.g., higher penalties for missing a hard hat vs. a false alarm).
+At the current stage (Week 2), the system has a working end-to-end pipeline including:
+- Dataset preprocessing and structuring  
+- Exploratory Data Analysis (EDA)  
+- YOLOv8 model training  
+- Initial evaluation metrics  
+- Real-time webcam detection  
 
-### Dataset
-* **Source:** [Roboflow Construction Site Safety Dataset](https://universe.roboflow.com/roboflow-universe-projects/construction-site-safety)
-* **Description:** This dataset contains annotated images from diverse industrial settings. It includes bounding box labels for multiple PPE classes, providing the variety needed for the model to generalize across different lighting and weather conditions.
-* **Governance:** The data is used under an open-source academic license. All raw images are processed to ensure no personally identifiable information (PII) is stored in the repository.
+---
 
-### Evaluation Metrics
-The system is assessed using the following metrics:
-* **mAP@0.5 (Mean Average Precision):** Primary accuracy metric for object detection.
-* **Precision-Recall (PR) Curves:** Used to evaluate the balance between detection accuracy and sensitivity.
-* **Inference Latency:** Measured in frames per second (FPS) to ensure real-time viability.
-* **RL Cumulative Reward:** Evaluates the efficiency of the threshold-tuning agent compared to a static baseline.
-* **Macro-F1 Score:** Measures the performance of the auxiliary NLP log classifier.
+## System Architecture
 
-### Team Roles
-* **Project Lead / Integration (Pamintuan, Alexia):** Manages project scope, timeline, component integration, and final defense coordination.
-* **Data & Ethics Lead (Lapid, John):** Oversees dataset sourcing, licensing, preprocessing, and ethical impact documentation.
-* **Modeling Lead (Toribio, Dexter):** Responsible for model design (CNN, NLP, and RL), training pipelines, and error analysis.
-* **Evaluation & MLOps Lead (Santos, Jhanrelle):** Manages performance metrics, reproducibility, environment configuration, and automation scripts.
+- **Core Detection Model:** YOLOv8 (Ultralytics)
+- **Backbone:** CSPDarknet (for feature extraction)
+- **Detection Type:** Multi-class object detection
+- **Deployment Mode:** Real-time (OpenCV webcam)
 
-### How to Run
+---
 
-#### 1. Environment Setup
-Clone the repository and install the required dependencies:
-```bash
-pip install -r requirements.txt
+## Components
+
+### 🔹 CNN Component (YOLOv8)
+- Performs object detection and localization
+- Detects PPE classes such as:
+  - Hard hats
+  - Safety vests
+  - Face masks
+  - Non-compliance cases
+- Optimized for real-time inference
+
+---
+
+### 🔹 NLP Component (Prototype)
+- Classifies safety-related textual logs
+- Intended for:
+  - Incident classification
+  - Risk identification
+- Currently in early-stage implementation
+
+---
+
+### 🔹 RL Component (Stub)
+- Designed to dynamically adjust detection thresholds
+- Uses reward-based tuning (e.g., penalizing missed detections)
+- Not yet integrated into the main pipeline
+
+---
+
+## Dataset
+
+- **Source:**  
+  https://universe.roboflow.com/roboflow-universe-projects/construction-site-safety
+
+- **Description:**  
+  The dataset consists of annotated images from construction and industrial environments. Each image contains bounding box labels in YOLO format for multiple PPE classes.
+
+- **Preprocessing:**
+  - Images resized to 640×640
+  - Labels normalized
+  - Dataset split into train/val/test
+
+- **Data Split:**
+  - 70% Training  
+  - 15% Validation  
+  - 15% Testing  
+
+- **Ethical Considerations:**
+  - No personally identifiable information (PII) stored  
+  - Dataset used under open academic license  
+
+---
+
+## Exploratory Data Analysis (EDA)
+
+EDA revealed key dataset characteristics:
+
+- **Class Imbalance:**  
+  Some classes (e.g., hardhat) dominate others (e.g., face_mask)
+
+- **Small Object Detection Problem:**  
+  Many objects occupy only 3–12% of image area
+
+- **Lighting Variability:**  
+  Dataset includes both bright and low-light images
+
+These factors directly impact detection performance and guide future improvements.
+
+---
+
+## Model Training
+
+The model was trained using pretrained YOLOv8 weights:
+
+```python
+from ultralytics import YOLO
+
+model = YOLO("yolov8n.pt")
+
+model.train(
+    data="data.yaml",
+    epochs=50,
+    imgsz=640,
+    batch=16
+)
