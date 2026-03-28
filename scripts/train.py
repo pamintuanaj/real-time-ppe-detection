@@ -2,14 +2,14 @@ from pathlib import Path
 import json
 from ultralytics import YOLO
 
-MODEL_NAME = "yolov8n.pt"
-DATA_YAML = "data/data.yaml"
-EPOCHS = 100
-IMAGE_SIZE = 640
-BATCH_SIZE = 16
+MODEL_NAME  = "yolov8n.pt"
+DATA_YAML   = "data/data.yaml"
+EPOCHS      = 150   # LAPID
+IMAGE_SIZE  = 640
+BATCH_SIZE  = 16
 PROJECT_DIR = "models"
-RUN_NAME = "ppe_yolov8"
-PATIENCE = 20   # LAPID
+RUN_NAME    = "ppe_yolov8"
+PATIENCE    = 20   # LAPID
 
 def main():
     Path(PROJECT_DIR).mkdir(parents=True, exist_ok=True)
@@ -75,8 +75,10 @@ def main():
 
     # ── Advice based on mAP50 ─────────────────────────────────────────────────
     map50 = metrics_dict["mAP50"]
-    if map50 >= 0.75:
-        print("✅ Good result! Model is ready for live_cam.py testing.")
+    if map50 >= 0.80:
+        print("✅ Target reached! Model is ready for live_cam.py testing.")
+    elif map50 >= 0.75:
+        print("🟡 Almost there. Add more images and retrain.")
     elif map50 >= 0.65:
         print("⚠️  Decent result. Consider adding more images and retraining.")
     else:
@@ -87,7 +89,7 @@ def main():
     print(f"Confusion matrix and plots: {PROJECT_DIR}/{RUN_NAME}/")
     # LAPID
 
-    '''****REMOVED******* 
+    '''****REMOVED******* # LAPID
     print("Training complete.")
     print(f"Saved metrics to: {metrics_path}")
     print(f"Best weights should be in: {PROJECT_DIR}/{RUN_NAME}/weights/best.pt")
