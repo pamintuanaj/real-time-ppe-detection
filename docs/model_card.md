@@ -1,116 +1,32 @@
-# Model Card — Automated PPE Detection System
-
----
+# Model Card: Automated PPE Detection System
 
 ## 1. Model Overview
-
-This project presents a Personal Protective Equipment (PPE) detection system built using **YOLOv8 Nano (yolov8n)** fine-tuned for object detection. The model classifies worksite images into 10 categories and is supported by auxiliary components to improve reporting and threshold logic.
-
-The system integrates three AI components:
-* **CNN (YOLOv8 Nano)** for real-time bounding box localization and classification.
-* **NLP module (Logistic Regression + TF-IDF)** for generating human-readable safety incident logs.
-* **Reinforcement Learning (Q-Learning)** for dynamic confidence threshold optimization.
-
-**Input:**
-* RGB worksite image or video frame.
-
-**Output:**
-* Localized bounding boxes with class labels.
-* Confidence scores.
-* Formatted NLP safety incident report.
-
-**Classes:**
-* Person, Hardhat, Safety Vest, Mask, Machinery
-* NO-Hardhat, NO-Safety Vest, NO-Mask (and related compliance variants).
-
----
+* **Architecture:** Multi-Agent Pipeline (YOLOv8 Nano CNN -> Q-Learning RL Agent -> TF-IDF/LogReg NLP Classifier).
+* **Task:** Multi-class object detection and automated safety reporting.
+* **Input:** 640x640 RGB image/video frames.
+* **Classes (10):** Person, Hardhat, Safety Vest, Mask, Machinery, Safety Cone, Vehicle, NO-Hardhat, NO-Safety Vest, NO-Mask.
 
 ## 2. Intended Use
+* **Primary Use Case:** Real-time compliance monitoring on construction and industrial worksites.
+* **Prohibited Use:** Individual worker productivity tracking, biometric surveillance, or autonomous disciplinary enforcement without human review.
 
-This system is designed as a **decision-support tool** for worksite safety monitoring.
+## 3. Training Data & Governance
+* **Dataset:** 1,000+ open-source worksite images.
+* **Split:** 70% Training / 15% Validation / 15% Test.
+* **Governance:** Manual dataset audit confirmed the complete absence of Personally Identifiable Information (PII) such as recognizable faces or persistent facial IDs.
 
-It may be useful for:
-* Construction site safety officers.
-* Industrial zone compliance monitoring.
-* Educational demonstrations of multi-agent ML systems.
+## 4. Quantitative Evaluation (Validation Split)
+Evaluated using YOLOv8's native metrics, verified by `results.csv`:
 
-⚠️ The system is **not intended for autonomous disciplinary enforcement**, biometric surveillance, or medical-grade particulate mask detection.
-
----
-
-## 3. Training Data
-
-The model was trained on a dataset of 1,000 worksite images sourced from open repositories.
-
-### Preprocessing & Data Governance:
-* Manual audit confirmed the absence of Personally Identifiable Information (PII) such as recognizable faces or nametags.
-* Strict 70% Train, 15% Validation, 15% Test split to prevent data leakage.
-
-### Addressing Imbalance:
-* **Mosaic Augmentation** was utilized heavily during training to force the model to learn small-object features and address the spatial dominance of "Person" bounding boxes compared to "Mask" boxes.
-
----
-
-## 4. Evaluation
-
-### Overall Performance (Test Set)
 | Metric | Value |
-|---|---|
-| mAP@0.5 | **0.551** |
-| Max F1-Score | **0.52** (at threshold 0.297) |
+| :--- | :--- |
+| **Overall mAP@0.5** | **0.821 (82.1%)** |
+| **Precision (P)** | **0.907 (90.7%)** |
+| **Recall (R)** | **0.747 (74.7%)** |
 
-### Slice Analysis (Per-Class Performance)
-The model exhibits a stark contrast between macro and micro features:
-* **High-Performing Classes (Macro-Features):**
-  * Person: 0.835 mAP
-  * Hardhat: 0.763 mAP
-  * Safety Vest: 0.758 mAP
-* **Low-Performing Classes (Micro-Features):**
-  * Mask: 0.323 mAP
-  * NO-Mask: 0.339 mAP
+**Slice Analysis (Per-Class Performance):**
+* **Macro-Reliability:** The model demonstrates near-perfect localization for large objects (**Machinery: 94.7% mAP**, **Person: 89.9% mAP**).
+* **Micro-Feature Limitations:** While Masks achieved a high **92% mAP**, the **"NO-Mask"** compliance class dropped to **68.2%**. This highlights the difficulty of verifying the *absence* of gear in cluttered, dynamic scenes.
 
----
-
-## 5. Error Analysis & Limitations
-
-A granular review of the normalized confusion matrix identifies **Background False Negatives** as the primary failure mode.
-* The model incorrectly classified **58% of actual "Mask" instances** as background.
-* **Root Cause:** Standard YOLOv8 Nano pooling layers inherently lose fine-grained spatial resolution, causing micro-features to vanish before the detection head.
-
----
-
-## 6. Ablation Study
-
-An ablation study was conducted to evaluate the impact of spatial augmentations on resolving the micro-feature limitation.
-
-| Experiment | Configuration | Observation |
-|---|---|---|
-| **Baseline** | Mosaic Augmentation ON | Smoother loss convergence; better generalization on occluded workers. |
-| **Ablation** | Mosaic Augmentation OFF | Degraded ability to detect smaller, clustered objects. |
-
-👉 This confirms that Mosaic augmentation is critical for worksite datasets containing extreme scale variations.
-
----
-
-## 7. Reinforcement Learning Component
-
-A **Q-learning agent** was deployed to optimize the YOLOv8 confidence threshold dynamically.
-
-* **Purpose:** To adjust thresholds based on simulated environmental states (e.g., lowering the threshold in poor lighting).
-* **Reward Design:** Heavily penalizes false negatives in hazardous conditions, ensuring the system prioritizes worker safety (detecting a potential missing helmet) over pure statistical precision.
-
----
-
-## 8. NLP Explanation Module
-
-An NLP component (Logistic Regression + TF-IDF) bridges the gap between raw arrays and actionable logs.
-* **Behavior:** Ingests bounding box class data (e.g., "NO-Hardhat") and synthesizes it into standardized alerts.
-* **Example Output:** `[HIGH_RISK REPORT]: Missing hardhat detected in active construction zone. Require immediate visual verification.`
-
----
-
-## 9. Future Work
-
-* Implement **SAHI (Slicing Aided Hyper Inference)** to crop large images before detection, resolving the small-object (Mask) failure mode.
-* Increase input tensor resolution (`imgsz`).
-* Expand dataset with localized, region-specific worksite data.
+## 5. Error Analysis: Background False Negatives
+A review of the confusion matrix identifies **Background Confusion** as a primary failure mode. Standard pooling layers in the Nano architecture lose fine-grained spatial resolution for tiny objects, occasionally causing the model to treat safety gear as background noise.
