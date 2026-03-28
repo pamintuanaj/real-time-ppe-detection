@@ -2,15 +2,15 @@ task: detect
 mode: train
 model: yolov8n.pt
 data: data/data.yaml
-epochs: 5
+epochs: 150
 time: null
-patience: 100
+patience: 30
 batch: 16
 imgsz: 640
 save: true
 save_period: -1
 cache: false
-device: cpu
+device: null
 workers: 8
 project: models
 name: ppe_yolov8
@@ -89,10 +89,10 @@ nbs: 64
 hsv_h: 0.015
 hsv_s: 0.7
 hsv_v: 0.4
-degrees: 0.0
+degrees: 10.0
 translate: 0.1
 scale: 0.5
-shear: 0.0
+shear: 2.0
 perspective: 0.0
 flipud: 0.0
 fliplr: 0.5
@@ -106,4 +106,4 @@ auto_augment: randaugment
 erasing: 0.4
 cfg: null
 tracker: botsort.yaml
-save_dir: E:\flutter\real-time-ppe-detection\runs\detect\models\ppe_yolov8
+save_dir: C:\Users\xxend\Documents\GitHub\real-time-ppe-detection\runs\detect\models\ppe_yolov8

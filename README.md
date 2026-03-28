@@ -42,10 +42,12 @@ real-time-ppe-detection/
 │           └── ppe_yolov8/
 │
 ├── scripts/
-│   ├── detection.py
-│   ├── nlp_component_stub.py
-│   └── rl_stub.py
-│
+│   ├── train.py
+│   ├── live_cam.py
+│   └── baseline_ml.py
+│   ├── nlp_component.py
+│   ├── rl_qlearning.py
+│ 
 ├── models/
 │
 ├── experiments/
@@ -73,7 +75,33 @@ pip install -r requirements.txt
 
 ---
 
-## Dataset
+## Dataset Sources
+
+This project utilizes multiple publicly available datasets for training and evaluation of PPE detection models:
+
+1. Construction Site Safety Image Dataset (Roboflow)  
+   https://www.kaggle.com/datasets/snehilsanyal/construction-site-safety-image-dataset-roboflow  
+   - A YOLOv8-ready dataset designed for construction safety tasks  
+   - Contains annotated images of workers with PPE such as hard hats and safety vests :contentReference[oaicite:0]{index=0}  
+
+2. SH17 Dataset for PPE Detection  
+   https://www.kaggle.com/datasets/mugheesahmad/sh17-dataset-for-ppe-detection  
+   - Large-scale dataset with thousands of annotated images across multiple PPE classes  
+   - Includes diverse industrial environments and up to 17 object categories for safety analysis :contentReference[oaicite:1]{index=1}  
+
+3. Hardhat & Vest Dataset v3  
+   https://www.kaggle.com/datasets/muhammetzahitaydn/hardhat-vest-dataset-v3  
+   - Focused dataset for detecting hard hats and safety vests  
+   - Useful for improving detection performance on key PPE classes  
+
+### Dataset Characteristics
+- Images: Real-world construction and industrial environments  
+- Format: YOLO annotation format (.txt)  
+- Classes: Includes PPE items such as hard hats, masks, safety vests, and non-compliance categories  
+- Purpose: Designed for object detection tasks in workplace safety monitoring  
+
+### Privacy Statement
+This dataset contains no Personally Identifiable Information (PII).
 
 ### Source
 
