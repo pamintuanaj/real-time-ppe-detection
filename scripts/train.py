@@ -9,7 +9,7 @@ IMAGE_SIZE  = 640
 BATCH_SIZE  = 16
 PROJECT_DIR = "models"
 RUN_NAME    = "ppe_yolov8"
-PATIENCE    = 20   # LAPID
+PATIENCE    = 30   # LAPID
 
 def main():
     Path(PROJECT_DIR).mkdir(parents=True, exist_ok=True)
